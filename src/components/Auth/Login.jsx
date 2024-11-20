@@ -37,7 +37,7 @@ const Login = () => {
                 border-2 border-emerald-600 rounded-full py-4 px-5 
                 text-xl text-white outline-none mt-3' type="password" placeholder='Enter password'  />
                 
-                <button className='bg-transparent w-full placeholder:text-white 
+                <button className='w-full placeholder:text-white 
                  bg-emerald-600 border-none rounded-full py-4 px-5 
                 text-xl text-white outline-none mt-5'>Login</button>
             </form>
