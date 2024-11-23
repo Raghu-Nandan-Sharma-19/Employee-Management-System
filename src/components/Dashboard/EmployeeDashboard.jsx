@@ -1,22 +1,24 @@
 import React from 'react'
+import Header from '../other/Header'
+import TaskListNumbers from '../other/TaskListNumbers'
+import TaskList from '../TaskList/TaskList'
 
-const AcceptTask = ({data}) => {
+const EmployeeDashboard = (props) => {
   return (
-    <div className='flex-shrink-0 h-full w-full sm:w-[300px] p-5 bg-red-400 rounded-xl'>
-      <div className='flex justify-between items-center'>
-        <h3 className='bg-red-600 text-sm px-3 py-1 rounded'>{data.category}</h3>
-        <h4 className='text-sm'>{data.taskDate}</h4>
-      </div>
-      <h2 className='mt-5 text-2xl font-semibold'>{data.taskTitle}</h2>
-      <p className='text-sm mt-2'>
-        {data.taskDescription}
-      </p>
-      <div className='flex justify-between mt-6'>
-        <button className='bg-green-500 rounded font-medium py-1 px-2 text-xs'>Mark as Completed</button>
-        <button className='bg-red-500 rounded font-medium py-1 px-2 text-xs'>Mark as Failed</button>
+    <div className='min-h-screen w-full bg-[#1C1C1C] p-3 sm:p-6 md:p-10 overflow-x-hidden'>
+      <div className='max-w-7xl mx-auto space-y-3 sm:space-y-6 md:space-y-8'>
+        <Header changeUser={props.changeUser} data={props.data}/>
+        
+        <div className='w-full'>
+          <TaskListNumbers data={props.data} />
+        </div>
+        
+        <div className='w-full'>
+          <TaskList data={props.data} />
+        </div>
       </div>
     </div>
   )
 }
 
-export default AcceptTask
+export default EmployeeDashboard
