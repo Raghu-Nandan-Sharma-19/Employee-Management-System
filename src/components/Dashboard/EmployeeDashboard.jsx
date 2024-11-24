@@ -1,13 +1,16 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import Header from '../other/Header'
 import TaskListNumbers from '../other/TaskListNumbers'
 import TaskList from '../TaskList/TaskList'
 
 const EmployeeDashboard = ({ changeUser, data, onTaskUpdate }) => {
-  const handleTaskStatusUpdate = (taskId, newStatus) => {
-    // Call the parent's onTaskUpdate with the specific task ID and new status
-    onTaskUpdate(taskId, newStatus);
-  };
+  // Debounced task update handler
+  const handleTaskStatusUpdate = useCallback((taskId, newStatus) => {
+    // Use requestAnimationFrame to batch updates
+    requestAnimationFrame(() => {
+      onTaskUpdate(taskId, newStatus);
+    });
+  }, [onTaskUpdate]);
 
   return (
     <div className='min-h-screen w-full bg-[#1C1C1C] p-3 sm:p-6 md:p-10 overflow-x-hidden'>
@@ -29,4 +32,4 @@ const EmployeeDashboard = ({ changeUser, data, onTaskUpdate }) => {
   )
 }
 
-export default EmployeeDashboard
+export default React.memo(EmployeeDashboard)
