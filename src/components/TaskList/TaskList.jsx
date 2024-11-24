@@ -4,7 +4,7 @@ import NewTask from './NewTask'
 import CompleteTask from './CompleteTask'
 import FailedTask from './FailedTask'
 
-const TaskList = ({ data }) => {
+const TaskList = ({ data, onTaskUpdate }) => {
     return (
         <div className='mt-6 sm:mt-10 md:mt-16'>
             <h2 className='text-xl sm:text-2xl font-semibold mb-4 sm:mb-6'>Your Tasks</h2>
@@ -42,16 +42,16 @@ const TaskList = ({ data }) => {
                 ) : (
                     data.tasks.map((elem, idx) => {
                         if (elem.active) {
-                            return <AcceptTask key={idx} data={elem} />
+                            return <AcceptTask key={idx} data={elem} onTaskUpdate={onTaskUpdate} />
                         }
                         if (elem.newTask) {
-                            return <NewTask key={idx} data={elem} />
+                            return <NewTask key={idx} data={elem} onTaskUpdate={onTaskUpdate} />
                         }
                         if (elem.completed) {
-                            return <CompleteTask key={idx} data={elem} />
+                            return <CompleteTask key={idx} data={elem} onTaskUpdate={onTaskUpdate} />
                         }
                         if (elem.failed) {
-                            return <FailedTask key={idx} data={elem} />
+                            return <FailedTask key={idx} data={elem} onTaskUpdate={onTaskUpdate} />
                         }
                         return null;
                     })
