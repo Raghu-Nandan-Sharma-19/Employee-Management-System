@@ -7,6 +7,7 @@ const CreateTask = () => {
     const [taskDate, setTaskDate] = useState('')
     const [asignTo, setAsignTo] = useState('')
     const [category, setCategory] = useState('')
+<<<<<<< HEAD
     const [employees, setEmployees] = useState([])
 
     useEffect(() => {
@@ -59,13 +60,26 @@ const CreateTask = () => {
         updateLocalStorage(updatedEmployees)
 
         // Reset form
+=======
+    const [newTask, setNewTask] = useState({})
+
+    const submitHandler = (e) => {
+        e.preventDefault()
+        setNewTask({ taskTitle, taskDescription, taskDate, category, active: false, newTask: true, failed: false, completed: false })
+        const data = userData
+        data.forEach(function (elem) {
+            if (asignTo == elem.firstName) {
+                elem.tasks.push(newTask)
+                elem.taskCounts.newTask = elem.taskCounts.newTask + 1
+            }
+        })
+        setUserData(data)
+>>>>>>> parent of fa4b018 (Updated functionality)
         setTaskTitle('')
         setCategory('')
         setAsignTo('')
         setTaskDate('')
         setTaskDescription('')
-
-        alert('Task created successfully!')
     }
 
     return (
@@ -79,7 +93,6 @@ const CreateTask = () => {
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Task Title</h3>
                         <input
-                            required
                             value={taskTitle}
                             onChange={(e) => setTaskTitle(e.target.value)}
                             className='text-sm py-2 px-3 w-full lg:w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400' 
@@ -92,7 +105,6 @@ const CreateTask = () => {
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Date</h3>
                         <input
-                            required
                             value={taskDate}
                             onChange={(e) => setTaskDate(e.target.value)}
                             className='text-sm py-2 px-3 w-full lg:w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400' 
@@ -103,10 +115,10 @@ const CreateTask = () => {
                     {/* Assign to select */}
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Assign to</h3>
-                        <select
-                            required
+                        <input
                             value={asignTo}
                             onChange={(e) => setAsignTo(e.target.value)}
+<<<<<<< HEAD
                             className='text-sm py-2 px-3 w-full lg:w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400 text-white [&>option]:text-black' 
                         >
                             <option value="">Select Employee</option>
@@ -116,13 +128,18 @@ const CreateTask = () => {
                                 </option>
                             ))}
                         </select>
+=======
+                            className='text-sm py-2 px-3 w-full lg:w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400' 
+                            type="text" 
+                            placeholder='employee name' 
+                        />
+>>>>>>> parent of fa4b018 (Updated functionality)
                     </div>
                     
                     {/* Category input */}
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Category</h3>
                         <input
-                            required
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             className='text-sm py-2 px-3 w-full lg:w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400' 
@@ -136,15 +153,11 @@ const CreateTask = () => {
                 <div className='w-full lg:w-2/5 flex flex-col'>
                     <h3 className='text-sm text-gray-300 mb-1'>Description</h3>
                     <textarea 
-                        required
                         value={taskDescription}
                         onChange={(e) => setTaskDescription(e.target.value)} 
                         className='w-full h-32 sm:h-40 lg:h-44 text-sm py-2 px-3 rounded outline-none bg-transparent border-[1px] border-gray-400 resize-none' 
                     />
-                    <button 
-                        type="submit"
-                        className='bg-emerald-500 py-2.5 sm:py-3 hover:bg-emerald-600 px-5 rounded text-sm mt-4 w-full transition-colors duration-300'
-                    >
+                    <button className='bg-emerald-500 py-2.5 sm:py-3 hover:bg-emerald-600 px-5 rounded text-sm mt-4 w-full transition-colors duration-300'>
                         Create Task
                     </button>
                 </div>

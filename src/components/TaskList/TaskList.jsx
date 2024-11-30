@@ -4,6 +4,7 @@ import NewTask from './NewTask'
 import CompleteTask from './CompleteTask'
 import FailedTask from './FailedTask'
 
+<<<<<<< HEAD
 const TaskList = ({ data, onTaskUpdate }) => {
     // Memoize task filtering logic
     const taskComponents = useMemo(() => {
@@ -32,6 +33,9 @@ const TaskList = ({ data, onTaskUpdate }) => {
         setActiveFilter(filter);
     }, []);
 
+=======
+const TaskList = ({ data }) => {
+>>>>>>> parent of fa4b018 (Updated functionality)
     return (
         <div className='mt-6 sm:mt-10 md:mt-16'>
             <h2 className='text-xl sm:text-2xl font-semibold mb-4 sm:mb-6'>Your Tasks</h2>
@@ -82,7 +86,27 @@ const TaskList = ({ data, onTaskUpdate }) => {
                     <div className='w-full text-center py-8 text-gray-400'>
                         No tasks available
                     </div>
+<<<<<<< HEAD
                 ) : taskComponents}
+=======
+                ) : (
+                    data.tasks.map((elem, idx) => {
+                        if (elem.active) {
+                            return <AcceptTask key={idx} data={elem} />
+                        }
+                        if (elem.newTask) {
+                            return <NewTask key={idx} data={elem} />
+                        }
+                        if (elem.completed) {
+                            return <CompleteTask key={idx} data={elem} />
+                        }
+                        if (elem.failed) {
+                            return <FailedTask key={idx} data={elem} />
+                        }
+                        return null;
+                    })
+                )}
+>>>>>>> parent of fa4b018 (Updated functionality)
             </div>
             
             {/* Scroll Indicator */}

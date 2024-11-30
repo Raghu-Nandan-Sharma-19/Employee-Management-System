@@ -6,18 +6,27 @@ import { AuthContext } from './context/AuthProvider'
 import { setLocalStorage, getLocalStorage, updateLocalStorage } from './utils/localStorage'
 
 const App = () => {
+
   const [user, setUser] = useState(null)
   const [loggedInUserData, setLoggedInUserData] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [userData, setUserData] = useContext(AuthContext)
+  const [userData,SetUserData] = useContext(AuthContext)
 
   useEffect(() => {
-    // Initialize localStorage data when app loads
-    setLocalStorage()
-    const { employees } = getLocalStorage()
-    setUserData(employees) // Set initial context data from localStorage
-    
+    if (userData && loggedInUserData) {
+      const updatedUser = userData.find(u => u.email === loggedInUserData.email)
+      if (updatedUser) {
+        setLoggedInUserData(updatedUser)
+        localStorage.setItem('loggedInUser', JSON.stringify({
+          role: 'employee',
+          data: updatedUser
+        }))
+      }
+    }
+  }, [userData])
+
+  useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser')
+    
     if (loggedInUser) {
       try {
         const userData = JSON.parse(loggedInUser)
@@ -31,19 +40,13 @@ const App = () => {
     setIsLoading(false)
   }, [])
 
-  // Sync context changes with localStorage
-  useEffect(() => {
-    if (userData) {
-      updateLocalStorage(userData)
-    }
-  }, [userData])
-
   const handleTaskUpdate = (taskId, newStatus) => {
     // Create a copy of userData
     const updatedUserData = userData.map(user => {
       if (user.email === loggedInUserData.email) {
         // Update task status
         const updatedTasks = user.tasks.map(task => {
+          // Only update the specific task that matches the ID
           if (task.id === taskId) {
             return {
               ...task,
@@ -53,6 +56,7 @@ const App = () => {
               completed: newStatus === 'completed'
             }
           }
+          // Return other tasks unchanged
           return task
         })
 
@@ -73,7 +77,9 @@ const App = () => {
       return user
     })
 
-    setUserData(updatedUserData)
+    // Update global state
+    setUserData([...updatedUserData])
+    localStorage.setItem('userData', JSON.stringify(updatedUserData))
   }
 
   const handleLogin = (email, password) => {
@@ -82,21 +88,22 @@ const App = () => {
       return
     }
 
-    if (email === 'admin@example.com' && password === '123') {
+    if (email === 'admin@me.com' && password === '123') {
       setUser('admin')
       localStorage.setItem('loggedInUser', JSON.stringify({ role: 'admin' }))
       return
     }
 
-    const { employees } = getLocalStorage()
-    const employee = employees.find(e => e.email === email)
-
-    if (!employee) {
-      alert('No account found with this email')
+    if (!userData) {
+      alert('User data not available')
       return
     }
 
-    if (employee.password === password) {
+    const employee = userData.find(
+      (e) => e.email === email && e.password === password
+    )
+
+    if (employee) {
       setUser('employee')
       setLoggedInUserData(employee)
       localStorage.setItem(
@@ -104,32 +111,17 @@ const App = () => {
         JSON.stringify({ role: 'employee', data: employee })
       )
     } else {
-      alert('Invalid password')
+      alert('Invalid credentials')
     }
   }
 
-  const handleLogout = () => {
-    setUser(null)
-    setLoggedInUserData(null)
-    localStorage.removeItem('loggedInUser')
-  }
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
 
-  if (!user) {
-    return <Login handleLogin={handleLogin} />
-  }
-
-  return user === 'admin' ? (
-    <AdminDashboard changeUser={handleLogout} />
-  ) : (
-    <EmployeeDashboard 
-      changeUser={handleLogout} 
-      data={loggedInUserData}
-      onTaskUpdate={handleTaskUpdate}
-    />
+  return (
+    <>
+      {!user ? <Login handleLogin={handleLogin} /> : ''}
+      {user == 'admin' ? <AdminDashboard changeUser={setUser} /> : (user == 'employee' ? <EmployeeDashboard changeUser={setUser} data={loggedInUserData} /> : null) }
+    </>
   )
 }
 
