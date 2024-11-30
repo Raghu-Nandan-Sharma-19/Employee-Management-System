@@ -2,12 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-  color: #fff;
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #111111;
+  color: white;
 }
-body{
-  background-color: #111;
+
+#root {
+  min-height: 100vh;
 }
+
 #tasklist::-webkit-scrollbar{
     background-color: transparent;
     height: 5px;

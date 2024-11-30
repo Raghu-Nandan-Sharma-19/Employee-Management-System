@@ -1,13 +1,18 @@
-import React, { useContext, useState } from 'react'
-import { AuthContext } from '../../context/AuthProvider'
+import React, { useState, useEffect } from 'react'
+import { getLocalStorage, updateLocalStorage } from '../../utils/localStorage'
 
 const CreateTask = () => {
-    const [userData, setUserData] = useContext(AuthContext)
     const [taskTitle, setTaskTitle] = useState('')
     const [taskDescription, setTaskDescription] = useState('')
     const [taskDate, setTaskDate] = useState('')
     const [asignTo, setAsignTo] = useState('')
     const [category, setCategory] = useState('')
+    const [employees, setEmployees] = useState([])
+
+    useEffect(() => {
+        const { employees } = getLocalStorage()
+        setEmployees(employees)
+    }, [])
 
     const submitHandler = (e) => {
         e.preventDefault()
@@ -29,28 +34,31 @@ const CreateTask = () => {
             completed: false
         }
 
-        const updatedUserData = userData.map(user => {
-            if (user.firstName === asignTo) {
+        const updatedEmployees = employees.map(employee => {
+            if (employee.firstName === asignTo) {
+                const tasks = employee.tasks || []
                 return {
-                    ...user,
-                    tasks: [...user.tasks, newTask],
+                    ...employee,
+                    tasks: [...tasks, newTask],
                     taskCounts: {
-                        ...user.taskCounts,
-                        newTask: (user.taskCounts.newTask || 0) + 1
+                        ...employee.taskCounts,
+                        newTask: ((employee.taskCounts && employee.taskCounts.newTask) || 0) + 1
                     }
                 }
             }
-            return user
+            return employee
         })
 
-        if (!updatedUserData.some(user => user.firstName === asignTo)) {
+        if (!updatedEmployees.some(employee => employee.firstName === asignTo)) {
             alert('Employee not found')
             return
         }
 
-        setUserData(updatedUserData)
-        localStorage.setItem('userData', JSON.stringify(updatedUserData))
+        // Update both local state and localStorage
+        setEmployees(updatedEmployees)
+        updateLocalStorage(updatedEmployees)
 
+        // Reset form
         setTaskTitle('')
         setCategory('')
         setAsignTo('')
@@ -67,6 +75,7 @@ const CreateTask = () => {
             >
                 {/* Left Section */}
                 <div className='w-full lg:w-1/2 space-y-4'>
+                    {/* Task Title input */}
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Task Title</h3>
                         <input
@@ -79,6 +88,7 @@ const CreateTask = () => {
                         />
                     </div>
                     
+                    {/* Date input */}
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Date</h3>
                         <input
@@ -90,6 +100,7 @@ const CreateTask = () => {
                         />
                     </div>
                     
+                    {/* Assign to select */}
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Assign to</h3>
                         <select
@@ -99,14 +110,15 @@ const CreateTask = () => {
                             className='text-sm py-2 px-3 w-full lg:w-4/5 rounded outline-none bg-transparent border-[1px] border-gray-400 text-white [&>option]:text-black' 
                         >
                             <option value="">Select Employee</option>
-                            {userData.map(user => (
-                                <option key={user.email} value={user.firstName}>
-                                    {user.firstName}
+                            {employees.map(employee => (
+                                <option key={employee.email} value={employee.firstName}>
+                                    {employee.firstName}
                                 </option>
                             ))}
                         </select>
                     </div>
                     
+                    {/* Category input */}
                     <div>
                         <h3 className='text-sm text-gray-300 mb-1'>Category</h3>
                         <input

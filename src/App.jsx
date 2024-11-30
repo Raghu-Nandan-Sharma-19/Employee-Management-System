@@ -3,6 +3,7 @@ import Login from './components/Auth/Login'
 import EmployeeDashboard from './components/Dashboard/EmployeeDashboard'
 import AdminDashboard from './components/Dashboard/AdminDashboard'
 import { AuthContext } from './context/AuthProvider'
+import { setLocalStorage, getLocalStorage, updateLocalStorage } from './utils/localStorage'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -11,21 +12,12 @@ const App = () => {
   const [userData, setUserData] = useContext(AuthContext)
 
   useEffect(() => {
-    if (userData && loggedInUserData) {
-      const updatedUser = userData.find(u => u.email === loggedInUserData.email)
-      if (updatedUser) {
-        setLoggedInUserData(updatedUser)
-        localStorage.setItem('loggedInUser', JSON.stringify({
-          role: 'employee',
-          data: updatedUser
-        }))
-      }
-    }
-  }, [userData])
-
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem('loggedInUser')
+    // Initialize localStorage data when app loads
+    setLocalStorage()
+    const { employees } = getLocalStorage()
+    setUserData(employees) // Set initial context data from localStorage
     
+    const loggedInUser = localStorage.getItem('loggedInUser')
     if (loggedInUser) {
       try {
         const userData = JSON.parse(loggedInUser)
@@ -39,13 +31,19 @@ const App = () => {
     setIsLoading(false)
   }, [])
 
+  // Sync context changes with localStorage
+  useEffect(() => {
+    if (userData) {
+      updateLocalStorage(userData)
+    }
+  }, [userData])
+
   const handleTaskUpdate = (taskId, newStatus) => {
     // Create a copy of userData
     const updatedUserData = userData.map(user => {
       if (user.email === loggedInUserData.email) {
         // Update task status
         const updatedTasks = user.tasks.map(task => {
-          // Only update the specific task that matches the ID
           if (task.id === taskId) {
             return {
               ...task,
@@ -55,7 +53,6 @@ const App = () => {
               completed: newStatus === 'completed'
             }
           }
-          // Return other tasks unchanged
           return task
         })
 
@@ -76,9 +73,7 @@ const App = () => {
       return user
     })
 
-    // Update global state
-    setUserData([...updatedUserData])
-    localStorage.setItem('userData', JSON.stringify(updatedUserData))
+    setUserData(updatedUserData)
   }
 
   const handleLogin = (email, password) => {
@@ -87,22 +82,21 @@ const App = () => {
       return
     }
 
-    if (email === 'admin@me.com' && password === '123') {
+    if (email === 'admin@example.com' && password === '123') {
       setUser('admin')
       localStorage.setItem('loggedInUser', JSON.stringify({ role: 'admin' }))
       return
     }
 
-    if (!userData) {
-      alert('User data not available')
+    const { employees } = getLocalStorage()
+    const employee = employees.find(e => e.email === email)
+
+    if (!employee) {
+      alert('No account found with this email')
       return
     }
 
-    const employee = userData.find(
-      (e) => e.email === email && e.password === password
-    )
-
-    if (employee) {
+    if (employee.password === password) {
       setUser('employee')
       setLoggedInUserData(employee)
       localStorage.setItem(
@@ -110,7 +104,7 @@ const App = () => {
         JSON.stringify({ role: 'employee', data: employee })
       )
     } else {
-      alert('Invalid credentials')
+      alert('Invalid password')
     }
   }
 
